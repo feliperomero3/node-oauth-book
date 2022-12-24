@@ -1,0 +1,14 @@
+{
+  "name": "oauth-book",
+  "version": "0.1.0-preview",
+  "description": "Simple framework to build OAuth clients, protected resources, and authorization servers.",
+  "scripts": {
+    "test": ""
+  },
+  "author": "Felipe Romero",
+  "license": "MIT",
+  "repository": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {}
+}
