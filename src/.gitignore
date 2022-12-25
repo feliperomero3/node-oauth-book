@@ -102,3 +102,6 @@
 
 # TernJS port file
 **/.tern-port
+
+**/*.crt
+**/*.key
