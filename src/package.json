@@ -3,12 +3,16 @@
   "version": "0.1.0-preview",
   "description": "Simple framework to build OAuth clients, protected resources, and authorization servers.",
   "scripts": {
+    "start": "node authorization-server/app.js",
     "test": ""
   },
   "author": "Felipe Romero",
   "license": "MIT",
-  "repository": "",
+  "repository": "https://github.com/feliperomero3/node-oauth-book",
+  "type": "module",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.18.2"
+  },
   "devDependencies": {}
 }
