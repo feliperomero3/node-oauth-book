@@ -8,11 +8,11 @@ Based on the sample application built in the book '[OAuth 2 in Action][1]' by Ju
 
 ## Getting started
 
-1. Clone the project.
+1. Clone this repository.
 1. Open a terminal in the `src` directory.
 1. Generate a certificate (`server.crt`) with private key (`server.key`) ([How-to][2])
 1. Run `npm install` or `npm i`.
-1. Run `node src/app.js`.
+1. Run `node authorization-server/app.js`.
 1. Open your web browser.
 
 ## License
