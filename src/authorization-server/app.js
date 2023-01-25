@@ -1,17 +1,12 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import fs from 'fs';
-import https from 'https';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-/* jshint -W024 */
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-/* jshint +W024 */
+const express = require('express');
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const https = require('https');
+const path = require('path');
 
 const options = {
-  key: fs.readFileSync(path.join(dirname, '../server.key')),
-  cert: fs.readFileSync(path.join(dirname, '../server.crt'))
+  key: fs.readFileSync(path.join(__dirname, '../server.key')),
+  cert: fs.readFileSync(path.join(__dirname, '../server.crt'))
 };
 
 var app = express();
