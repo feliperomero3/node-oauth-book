@@ -4,14 +4,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>authorization-server</title>
+  <title>OAuth in Action: OAuth Authorization Server</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css' integrity='sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA==' crossorigin='anonymous' />
 </head>
 
-<body>
+<body class="d-flex flex-column h-100">
+  <header>
 
-  <!-- Add your site or application content here -->
-  <p>Hello world!</p>
-
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">OAuth Authorization Server</a>
+      </div>
+    </nav>
+  </header>
+  <main class="flex-shrink-0">
+    <div class="container mt-4">
+      <div class="alert alert-danger" role="alert">This is the shell for the <strong>OAuth Authorization Server</strong>. This provides no actual functionality.</div>
+      <div class="container-fluid">
+        <p class="col-md-8 fs-4">
+        <h2 class="display-6">Client information:</h2>
+        <% _.each(clients, function(client) { %>
+        <ul>
+          <li><b>client_id:</b> <code><%- client.client_id %></code></li>
+          <li><b>client_secret:</b> <code><%- client.client_secret %></code></li>
+          <li><b>scope:</b> <code><%- client.scope %></code></li>
+          <li><b>redirect_uri:</b> <code><%- client.redirect_uri %></code></li>
+        </ul>
+        <% }); %>
+        <h2 class="display-6">Server information:</h2>
+        <ul>
+          <li><b>authorization_endpoint:</b> <code><%- authServer.authorizationEndpoint %></code></li>
+          <li><b>token_endpoint:</b> <code><%- authServer.tokenEndpoint %></code></li>
+        </ul>
+        </p>
+      </div>
+    </div>
+  </main>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js' integrity='sha512-i9cEfJwUwViEPFKdC1enz4ZRGBj8YQo6QByFTF92YXHi7waCqyexvRD75S5NVTsSiTv7rKWqG9Y5eFxmRsOn0A==' crossorigin='anonymous'></script>
 </body>
 
 </html>

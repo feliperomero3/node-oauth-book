@@ -7,11 +7,6 @@ var cons = require('consolidate');
 var __ = require('underscore');
 __.string = require('underscore.string');
 
-const options = {
-  key: fs.readFileSync(path.join(__dirname, '../server.key')),
-  cert: fs.readFileSync(path.join(__dirname, '../server.crt'))
-};
-
 var app = express();
 
 app.set('appname', 'authorization-server');
@@ -27,9 +22,28 @@ app.use(express.static('views'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+var authServer = {
+  authorizationEndpoint: 'http://localhost:9001/authorize',
+  tokenEndpoint: 'http://localhost:9001/token'
+};
+
+var clients = [
+  {
+    "client_id": "oauth-client-1",
+    "client_secret": "oauth-client-secret-1",
+    "redirect_uris": ["http://localhost:9000/callback"],
+    "scope": "foo bar"
+  }
+];
+
 app.get('/', (req, res) => {
-  res.render('index');
+  res.render('index', { clients: clients, authServer: authServer });
 });
+
+const options = {
+  key: fs.readFileSync(path.join(__dirname, '../server.key')),
+  cert: fs.readFileSync(path.join(__dirname, '../server.crt'))
+};
 
 const server = https.createServer(options, app);
 
