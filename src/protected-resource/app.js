@@ -9,7 +9,7 @@ __.string = require('underscore.string');
 
 var app = express();
 
-app.set('appname', 'authorization-server');
+app.set('appname', 'protected-resource');
 app.set('json spaces', 2);
 app.set('port', process.env.PORT || 9002);
 app.set('host', process.env.HOST || 'localhost');
