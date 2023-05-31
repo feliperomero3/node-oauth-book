@@ -19,7 +19,7 @@ Based on the sample application built in the book '[OAuth 2 in Action][1]' by Ju
 
 [MIT License](./LICENSE)
 
-Copyright &copy; 2022 Felipe Romero
+Copyright &copy; 2023 Felipe Romero
 
 [1]: https://www.manning.com/books/oauth-2-in-action
 [2]: https://gist.github.com/feliperomero3/a6282b0e7ca579fff0e296227675190d
