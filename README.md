@@ -13,7 +13,14 @@ Based on the sample application built in the book '[OAuth 2 in Action][1]' by Ju
 1. Generate a certificate (`server.crt`) with private key (`server.key`) ([How-to][2])
 1. Run `npm install`.
 1. Run `node authorization-server/app.js`.
-1. Open your web browser.
+1. Open a new terminal in the `src` directory.
+1. Run `node protected-resource/app.js`.
+1. Open a new terminal in the `src` directory.
+1. Run `node client/app.js`.
+1. Open a new web browser tab for each URL.
+    1. <https://localhost:9001/>
+    1. <https://localhost:9002/>
+    1. <https://localhost:9000/>
 
 ## License
 
