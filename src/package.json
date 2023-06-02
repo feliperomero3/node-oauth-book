@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node authorization-server/app.js",
     "resource": "node protected-resource/app.js",
+    "client": "nodemon client/app.js",
     "test": ""
   },
   "dependencies": {
