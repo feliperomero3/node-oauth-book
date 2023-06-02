@@ -50,5 +50,5 @@ const server = https.createServer(options, app);
 server.listen(app.get('port'), app.get('host'), () => {
   var host = server.address().address;
   var port = server.address().port;
-  console.log(`Server listening at https://${host}:${port}/`);
+  console.log(`OAuth Authorization Server listening at https://${host}:${port}/`);
 });
