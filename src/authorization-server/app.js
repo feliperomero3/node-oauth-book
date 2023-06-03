@@ -23,8 +23,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var authServer = {
-  authorizationEndpoint: 'http://localhost:9001/authorize',
-  tokenEndpoint: 'http://localhost:9001/token'
+  authorizationEndpoint: 'https://localhost:9001/authorize',
+  tokenEndpoint: 'https://localhost:9001/token'
 };
 
 var clients = [

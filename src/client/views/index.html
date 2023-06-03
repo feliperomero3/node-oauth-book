@@ -30,8 +30,8 @@
         <p><b>Refresh token value</b>: <span class="badge bg-danger"><%- refresh_token ? refresh_token : 'NONE' %></span></p>
       </div>
       <div>
-        <button class="btn btn-default" type="button" href="/authorize" disabled>Get OAuth Token</button>
-        <button class="btn btn-default" type="button" href="/fetch_resource" disabled>Get Protected Resource</button>
+        <a class="btn btn-secondary" href="/authorize">Get OAuth Token</a>
+        <a class="btn btn-secondary" href="/fetch_resource">Get Protected Resource</a>
       </div>
     </div>
   </main>
