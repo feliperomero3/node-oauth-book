@@ -59,6 +59,13 @@ var access_token = null;
 var refresh_token = null;
 var scope = null;
 
+app.get('/', (req, res) => {
+  res.render('index', { access_token: access_token, refresh_token: refresh_token, scope: scope });
+});
+
+/**
+ * Send the user to the authorization server (authorization endpoint).
+ */
 app.get('/authorize', function(req, res) {
   var state = randomstring.generate();
   var authorizeUrl = buildUrl(authorizationServer.authorizationEndpoint, {
@@ -69,10 +76,6 @@ app.get('/authorize', function(req, res) {
   });
   console.log("redirect", authorizeUrl);
   res.redirect(authorizeUrl);
-});
-
-app.get('/', (req, res) => {
-  res.render('index', { access_token: access_token, refresh_token: refresh_token, scope: scope });
 });
 
 const options = {

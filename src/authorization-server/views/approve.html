@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OAuth in Action: OAuth Authorization Server</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css' integrity='sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA==' crossorigin='anonymous' />
+  <style>
+    .navbar {
+      background-color: #322;
+    }
+  </style>
+</head>
+
+<body class="d-flex flex-column h-100">
+  <header>
+    <nav class="navbar navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/">OAuth in Action: <span class="badge bg-danger">OAuth Authorization Server</span><a>
+      </div>
+    </nav>
+  </header>
+  <main class="flex-shrink-0">
+    <div class="container mt-4">
+      <h2 class="display-6">Approve this client?</h2>
+      <% if (client.client_name) { %>
+      <p><b>Name:</b> <code><%- client.client_name %></code></p>
+      <% } %>
+      <p><b>ID:</b> <code><%- client.client_id %></code></p>
+      <% if (client.client_uri) { %>
+      <p><b>URI:</b> <code><%- client.client_uri %></code></p>
+      <% } %>
+      <% if (client.logo_uri) { %>
+      <p><b>logo:</b> <img src="<%- client.logo_uri %>" /></p>
+      <% } %>
+
+      <form class="form" action="/approve" method="POST">
+        <input type="hidden" name="reqid" value="<%- reqid %>">
+        <% if (scope) { %>
+        <p>The client is requesting access to the following:</p>
+        <ul>
+          <% _.each(scope, function(s) { %>
+          <li><input type="checkbox" name="scope_<%- s %>" id="scope_<%- s %>" checked="checked"> <label for="scope_<%- s %>"><%- s %></label></li>
+          <% }); %>
+        </ul>
+        <% } %>
+        <input type="submit" class="btn btn-success" name="approve" value="Approve">
+        <input type="submit" class="btn btn-danger" name="deny" value="Deny">
+      </form>
+    </div>
+  </main>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js' integrity='sha512-i9cEfJwUwViEPFKdC1enz4ZRGBj8YQo6QByFTF92YXHi7waCqyexvRD75S5NVTsSiTv7rKWqG9Y5eFxmRsOn0A==' crossorigin='anonymous'></script>
+</body>
+
+</html>
