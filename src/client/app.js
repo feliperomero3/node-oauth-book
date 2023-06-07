@@ -78,6 +78,13 @@ app.get('/authorize', function(req, res) {
   res.redirect(authorizeUrl);
 });
 
+/**
+ * Parse the response from the authorization server and get a token.
+ */
+app.get('/callback', (req, res) => {
+  res.render('index', { access_token: access_token, refresh_token: refresh_token, scope: scope });
+});
+
 const options = {
   key: fs.readFileSync(path.join(__dirname, '../server.key')),
   cert: fs.readFileSync(path.join(__dirname, '../server.crt'))

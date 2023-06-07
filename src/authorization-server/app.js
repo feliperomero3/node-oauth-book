@@ -95,7 +95,59 @@ app.get('/authorize', (req, res) => {
  * Process user's approval (consent).
  */
 app.post('/approve', (req, res) => {
-  res.render('index', { clients: clients, authServer: authorizationServer });
+  var reqid = req.body.reqid;
+  var query = requests[reqid];
+  delete requests[reqid];
+
+  if (!query) {
+    var message = 'No matching authorization request found.';
+    logger.error(message);
+    res.render('error', { error: message });
+    return;
+  }
+
+  if (req.body.approve) {
+    if (query.response_type === 'code') {
+      var code = randomstring.generate(8);
+      var user = req.body.user;
+      var scope = __.filter(__.keys(req.body), (s) => __.string.startsWith(s, 'scope_')).map((s) => s.slice('scope_'.length));
+      var client = getClient(query.client_id);
+      var clientScope = client.scope ? client.scope.split(' ') : undefined;
+      if (__.difference(scope, clientScope).length > 0) {
+        logger.warn('Client %s requested a disallowed scope: %s', client.client_id, clientScope);
+        let urlParsed = url.parse(query.redirect_uri);
+        delete urlParsed.search; // this is a weird behavior of the URL library
+        urlParsed.query = urlParsed.query || {};
+        urlParsed.query.error = 'invalid_scope';
+        res.redirect(url.format(urlParsed));
+        return;
+      }
+      codes[code] = { authorizationEndpointRequest: query, scope: scope, user: user };
+      let urlParsed = url.parse(query.redirect_uri);
+      delete urlParsed.search; // this is a weird behavior of the URL library
+      urlParsed.query = urlParsed.query || {};
+      urlParsed.query.code = code;
+      urlParsed.query.state = query.state;
+      res.redirect(url.format(urlParsed));
+      return;
+    } else {
+      logger.error('Unsupported response_type: %s', query.response_type);
+      let urlParsed = url.parse(query.redirect_uri);
+      delete urlParsed.search; // this is a weird behavior of the URL library
+      urlParsed.query = urlParsed.query || {};
+      urlParsed.query.error = 'unsupported_response_type';
+      res.redirect(url.format(urlParsed));
+      return;
+    }
+  } else {
+    logger.warn('User has denied access.');
+    let urlParsed = url.parse(query.redirect_uri);
+    delete urlParsed.search; // this is a weird behavior of the URL library
+    urlParsed.query = urlParsed.query || {};
+    urlParsed.query.error = 'access_denied';
+    res.redirect(url.format(urlParsed));
+    return;
+  }
 });
 
 const options = {
