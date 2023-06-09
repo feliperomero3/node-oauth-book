@@ -6,8 +6,8 @@ const path = require('path');
 const cons = require('consolidate');
 const __ = require('underscore');
 __.string = require('underscore.string');
-var url = require("url");
-var randomstring = require("randomstring");
+const url = require("url");
+const randomstring = require("randomstring");
 const { createLogger, format, transports } = require('winston');
 const logger = createLogger({
   format: format.combine(
@@ -15,7 +15,7 @@ const logger = createLogger({
     format.splat(),
     format.simple()
   ),
-  transports: [new transports.Console()]
+  transports: [new transports.Console({ level: 'debug' })]
 });
 
 var app = express();
@@ -128,6 +128,7 @@ app.post('/approve', (req, res) => {
       urlParsed.query = urlParsed.query || {};
       urlParsed.query.code = code;
       urlParsed.query.state = query.state;
+      logger.debug('Redirecting to: %s', url.format(urlParsed));
       res.redirect(url.format(urlParsed));
       return;
     } else {
@@ -148,6 +149,16 @@ app.post('/approve', (req, res) => {
     res.redirect(url.format(urlParsed));
     return;
   }
+});
+
+/**
+ * Process token request.
+ */
+app.post('/token', (req, res) => {
+  var token_response = { access_token: 'access_token', token_type: 'Bearer', scope: '' };
+  res.status(200).json(token_response);
+  logger.debug('Issued access token for code %s', req.body.code);
+  return;
 });
 
 const options = {

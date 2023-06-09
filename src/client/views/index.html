@@ -25,6 +25,10 @@
     <div class="container mt-4">
       <div class="alert alert-info" role="alert">This is the shell for the <strong>OAuth Client Server</strong>. This provides no actual functionality.</div>
       <div>
+        <!--
+          In a real OAuth application, it’s a terrible idea to display the access token like this since it’s a secret value
+          that the client is supposed to be protecting. In our demo application, this helps us visualize what’s happening,
+          so we’ll let this terrible security practice slide and caution you to be smarter in your production applications. -->
         <p><b>Access token value</b>: <span class="badge bg-danger"><%- access_token ? access_token : 'NONE' %></span></p>
         <p><b>Scope value</b>: <span class="badge bg-danger"><%- scope ? scope : 'NONE' %></span></p>
         <p><b>Refresh token value</b>: <span class="badge bg-danger"><%- refresh_token ? refresh_token : 'NONE' %></span></p>

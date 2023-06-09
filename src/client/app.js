@@ -1,14 +1,29 @@
 const express = require('express');
+// const request = require("sync-request");
+const superagent = require('superagent');
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
-var cons = require('consolidate');
-var __ = require('underscore');
+const cons = require('consolidate');
+const __ = require('underscore');
 __.string = require('underscore.string');
-var url = require("url");
-var randomstring = require("randomstring");
+const url = require("url");
+const randomstring = require("randomstring");
+const qs = require('qs');
+const querystring = require('querystring');
+const { createLogger, format, transports } = require('winston');
+const logger = createLogger({
+  format: format.combine(
+    format.colorize(),
+    format.splat(),
+    format.simple()
+  ),
+  transports: [new transports.Console({ level: 'debug' })]
+});
 
 var app = express();
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 app.set('appname', 'client');
 app.set('json spaces', 2);
@@ -32,13 +47,20 @@ const client = {
   "scope": "foo bar"
 };
 
+var protectedResource = 'http://localhost:9002/resource';
+
+var state = null;
+
+var access_token = null;
+var scope = null;
+
 /**
  * Utility function that uses the JavaScript `Url` library,
  * which takes care of formatting the query parameters and URL-encoding values.
  * @param {string} baseUrl - The base url to append the parameters to.
  * @param {object} options - The parameters to append to the url.
  * @param {string} hash = The fragment to append to the url.
- * @returns
+ * @returns The fully formed URL.
  */
 var buildUrl = function(baseUrl, options, hash) {
   var newUrl = url.parse(baseUrl, true);
@@ -55,6 +77,16 @@ var buildUrl = function(baseUrl, options, hash) {
   return url.format(newUrl);
 };
 
+/**
+ * Base64-encode client id and client secret to be used in HTTP basic authorization.
+ * @param {string} clientId - The Client ID.
+ * @param {*} clientSecret - The Client Secret.
+ * @returns The base64-encoded string.
+ */
+var encodeClientCredentials = function(clientId, clientSecret) {
+  return Buffer.from(querystring.escape(clientId) + ':' + querystring.escape(clientSecret)).toString('base64');
+};
+
 var access_token = null;
 var refresh_token = null;
 var scope = null;
@@ -67,14 +99,14 @@ app.get('/', (req, res) => {
  * Send the user to the authorization server (authorization endpoint).
  */
 app.get('/authorize', function(req, res) {
-  var state = randomstring.generate();
+  state = randomstring.generate();
   var authorizeUrl = buildUrl(authorizationServer.authorizationEndpoint, {
     response_type: 'code',
     client_id: client.client_id,
     redirect_uri: client.redirect_uris[0],
     state: state
   });
-  console.log("redirect", authorizeUrl);
+  logger.debug("Redirecting to: %s", authorizeUrl);
   res.redirect(authorizeUrl);
 });
 
@@ -82,7 +114,41 @@ app.get('/authorize', function(req, res) {
  * Parse the response from the authorization server and get a token.
  */
 app.get('/callback', (req, res) => {
-  res.render('index', { access_token: access_token, refresh_token: refresh_token, scope: scope });
+  if (req.query.error) {
+    logger.error(message);
+    res.render('error', { error: req.query.error });
+    return;
+  }
+  if (req.query.state != state) {
+    logger.error('State DOES NOT MATCH: expected %s got %s', state, req.query.state);
+    res.render('error', { error: 'State value did not match.' });
+    return;
+  }
+  var code = req.query.code;
+  var formData = qs.stringify({
+    grant_type: 'authorization_code',
+    code: code,
+    redirect_uri: client.redirect_uris[0]
+  });
+  var headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Authorization': `Basic ${encodeClientCredentials(client.client_id, client.client_secret)}`
+  };
+  logger.debug('Requesting access token for code %s', code);
+  superagent.post(authorizationServer.tokenEndpoint)
+    .set(headers)
+    .accept('application/json')
+    .send(formData)
+    .then((response) => {
+      access_token = response.body.access_token;
+      refresh_token = response.body.refresh_token || undefined;
+      logger.debug('Got access token: %s', access_token);
+      res.render('index', { access_token: access_token, refresh_token: refresh_token, scope: scope });
+    })
+    .catch(err => {
+      logger.error('Unable to fetch access token, error message: %s, server response: %s. ', err.message, err.response);
+      res.render('error', { error: 'Unable to fetch access token: ' + err.response });
+    });
 });
 
 const options = {
