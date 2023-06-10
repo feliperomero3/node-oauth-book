@@ -47,11 +47,12 @@ const client = {
   "scope": "foo bar"
 };
 
-var protectedResource = 'http://localhost:9002/resource';
+var protectedResource = 'https://localhost:9002/resource';
 
 var state = null;
 
 var access_token = null;
+var refresh_token = null;
 var scope = null;
 
 /**
@@ -76,10 +77,6 @@ var buildUrl = function(baseUrl, options, hash) {
   }
   return url.format(newUrl);
 };
-
-var access_token = null;
-var refresh_token = null;
-var scope = null;
 
 app.get('/', (req, res) => {
   res.render('index', { access_token: access_token, refresh_token: refresh_token, scope: scope });
@@ -136,6 +133,31 @@ app.get('/callback', (req, res) => {
     .catch(err => {
       logger.error('Unable to fetch access token, error message: %s, server response: %s. ', err.message, err.response);
       res.render('error', { error: 'Unable to fetch access token: ' + err.response });
+    });
+});
+
+/**
+ * Use the access token to call the resource server.
+ */
+app.get('/fetch_resource', (req, res) => {
+  if (!access_token) {
+    res.render('error', { error: 'Missing access token.' });
+    return;
+  }
+  logger.debug('Making request with access token %s', access_token);
+  superagent.get(protectedResource)
+    .auth(access_token, { type: 'bearer' })
+    .accept('application/json')
+    .then((response) => {
+      res.render('data', { resource: response.body });
+    })
+    .catch(err => {
+      logger.error('Unable to fetch resource, error message: %s, server response: %s. ', err.message, err.response);
+      if (err.response && err.response.status === 401) {
+        res.redirect('/authorize');
+      } else {
+        res.render('error', { error: 'Unable to fetch resource: ' + err.response });
+      }
     });
 });
 
