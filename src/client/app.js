@@ -1,5 +1,4 @@
 const express = require('express');
-// const request = require("sync-request");
 const superagent = require('superagent');
 const fs = require('fs');
 const https = require('https');
