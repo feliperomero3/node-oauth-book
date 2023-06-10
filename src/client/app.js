@@ -129,18 +129,16 @@ app.get('/callback', (req, res) => {
     code: code,
     redirect_uri: client.redirect_uris[0]
   });
-  var headers = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Authorization': `Basic ${encodeClientCredentials(client.client_id, client.client_secret)}`
-  };
   logger.debug('Requesting access token for code %s', code);
   superagent.post(authorizationServer.tokenEndpoint)
-    .set(headers)
+    .auth(client.client_id, client.client_secret)
+    .set('Content-Type', 'application/x-www-form-urlencoded')
     .accept('application/json')
     .send(formData)
     .then((response) => {
       access_token = response.body.access_token;
       refresh_token = response.body.refresh_token || undefined;
+      scope = response.body.scope;
       logger.debug('Got access token: %s', access_token);
       res.render('index', { access_token: access_token, refresh_token: refresh_token, scope: scope });
     })

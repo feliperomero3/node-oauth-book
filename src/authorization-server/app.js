@@ -8,6 +8,7 @@ const __ = require('underscore');
 __.string = require('underscore.string');
 const url = require("url");
 const randomstring = require("randomstring");
+const querystring = require('querystring');
 const { createLogger, format, transports } = require('winston');
 const logger = createLogger({
   format: format.combine(
@@ -49,6 +50,11 @@ var codes = {};
 
 var requests = {};
 
+/**
+ * Get a client by client ID.
+ * @param {string} clientId - The client ID.
+ * @returns The client object.
+ */
 var getClient = (clientId) => {
   return __.find(clients, (client) => client.client_id === clientId);
 };
@@ -155,9 +161,54 @@ app.post('/approve', (req, res) => {
  * Process token request.
  */
 app.post('/token', (req, res) => {
-  var token_response = { access_token: 'access_token', token_type: 'Bearer', scope: '' };
+  let authorization = req.headers.authorization;
+  // logger.debug(JSON.stringify(req.headers));
+  if (!authorization) {
+    logger.error('Authorization header is missing.');
+    res.status(401).json({ error: 'Invalid client' });
+    return;
+  }
+  logger.debug('Authorization header found.');
+  var clientCredentials = Buffer.from(authorization.slice('Basic '.length), 'base64').toString().split(':');
+  var clientId = querystring.unescape(clientCredentials[0]);
+  var clientSecret = querystring.unescape(clientCredentials[1]);
+  var client = getClient(clientId);
+  if (!client) {
+    logger.error('Unknown client %s', clientId);
+    res.status(401).json({ error: 'Invalid_client' });
+    return;
+  }
+  logger.info('The client %s is valid', clientId);
+  if (client.client_secret !== clientSecret) {
+    logger.error('Mismatched client secret. Expected %s got %s', client.client_secret, clientSecret);
+    res.status(401).json({ error: 'Invalid_client' });
+    return;
+  }
+  logger.info('Client %s has been successfully authenticated', clientId);
+  if (req.body.grant_type !== 'authorization_code') {
+    logger.error('Unknown grant type %s', req.body.grant_type);
+    res.status(400).json({ error: 'unsupported_grant_type' });
+    return;
+  }
+  logger.info('Grant type %s is valid', req.body.grant_type);
+  var code = codes[req.body.code];
+  if (!code) {
+    logger.error('Unknown code %s', req.body.code);
+    res.status(400).json({ error: 'invalid_grant' });
+    return;
+  }
+  if (clientId !== code.authorizationEndpointRequest.client_id) {
+    logger.error('Client mismatch. Expected %s got %s', code.authorizationEndpointRequest.client_id, clientId);
+    res.status(400).json({ error: 'Invalid_client' });
+    return;
+  }
+  delete codes[req.body.code]; // burn our code, it's been used.
+  var access_token = randomstring.generate();
+  var clientScope = code.scope ? code.scope.join(' ') : 'undefined';
+  logger.debug('Issuing access token %s with scope %s', access_token, clientScope);
+  var token_response = { access_token: access_token, token_type: 'Bearer', scope: clientScope };
+  logger.debug('Successfully issued access token for code %s', req.body.code);
   res.status(200).json(token_response);
-  logger.debug('Issued access token for code %s', req.body.code);
   return;
 });
 
