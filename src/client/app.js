@@ -9,7 +9,6 @@ __.string = require('underscore.string');
 const url = require("url");
 const randomstring = require("randomstring");
 const qs = require('qs');
-const querystring = require('querystring');
 const { createLogger, format, transports } = require('winston');
 const logger = createLogger({
   format: format.combine(
@@ -76,16 +75,6 @@ var buildUrl = function(baseUrl, options, hash) {
     newUrl.hash = hash;
   }
   return url.format(newUrl);
-};
-
-/**
- * Base64-encode client id and client secret to be used in HTTP basic authorization.
- * @param {string} clientId - The Client ID.
- * @param {*} clientSecret - The Client Secret.
- * @returns The base64-encoded string.
- */
-var encodeClientCredentials = function(clientId, clientSecret) {
-  return Buffer.from(querystring.escape(clientId) + ':' + querystring.escape(clientSecret)).toString('base64');
 };
 
 var access_token = null;
