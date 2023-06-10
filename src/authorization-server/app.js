@@ -18,6 +18,7 @@ const logger = createLogger({
   ),
   transports: [new transports.Console({ level: 'debug' })]
 });
+const favicon = require('serve-favicon');
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.set('view engine', 'html');
 app.engine('html', cons.underscore);
 
 app.use(express.static('views'));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
