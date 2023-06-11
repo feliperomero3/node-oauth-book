@@ -2,13 +2,20 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OAuth in Action: OAuth Protected Resource Server</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OAuth in Action: OAuth Client Server</title>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css' integrity='sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA==' crossorigin='anonymous' />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <style>
     .navbar {
-      background-color: #232;
+      background-color: #223;
+    }
+
+    pre {
+      background-color: rgb(223, 223, 223);
+      padding: .5rem !important;
+      width: fit-content;
     }
   </style>
 </head>
@@ -17,16 +24,14 @@
   <header>
     <nav class="navbar navbar-dark">
       <div class="container">
-        <a class="navbar-brand" href="/">OAuth in Action: <span class="badge bg-success">OAuth Protected Resource Server</span></a>
+        <a class="navbar-brand" href="/">OAuth in Action: <span class="badge bg-primary">OAuth Client Server</span><a>
       </div>
     </nav>
   </header>
   <main class="flex-shrink-0">
     <div class="container mt-4">
-      <div class="alert alert-success" role="alert">This is the shell for the <strong>OAuth Protected Resource Server</strong>. This provides no actual functionality.</div>
-      <p>
-        To access the resource, send a <code>GET</code> request to <code>https://localhost:9002/resource</code> and include a valid OAuth token.
-      </p>
+      <h2>Data from protected resource server</h2>
+      <pre><%- JSON.stringify(resource, null, 2) %></pre>
     </div>
   </main>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js' integrity='sha512-i9cEfJwUwViEPFKdC1enz4ZRGBj8YQo6QByFTF92YXHi7waCqyexvRD75S5NVTsSiTv7rKWqG9Y5eFxmRsOn0A==' crossorigin='anonymous'></script>

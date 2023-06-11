@@ -141,6 +141,7 @@ app.get('/callback', (req, res) => {
  */
 app.get('/fetch_resource', (req, res) => {
   if (!access_token) {
+    logger.error('Missing access token.');
     res.render('error', { error: 'Missing access token.' });
     return;
   }

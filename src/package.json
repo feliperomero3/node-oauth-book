@@ -9,7 +9,7 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon --watch authorization-server authorization-server/app.js",
-    "resource": "node protected-resource/app.js",
+    "resource": "nodemon --watch protected-resource protected-resource/app.js",
     "client": "nodemon --watch client client/app.js",
     "test": ""
   },
@@ -21,7 +21,6 @@
     "randomstring": "^1.3.0",
     "serve-favicon": "^2.5.0",
     "superagent": "^8.0.9",
-    "sync-request": "^6.1.0",
     "underscore": "^1.13.6",
     "underscore.string": "^3.3.6",
     "winston": "^3.9.0"

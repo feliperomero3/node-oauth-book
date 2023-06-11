@@ -163,8 +163,7 @@ app.post('/approve', (req, res) => {
  * Process token request.
  */
 app.post('/token', (req, res) => {
-  let authorization = req.headers.authorization;
-  // logger.debug(JSON.stringify(req.headers));
+  const authorization = req.headers.authorization;
   if (!authorization) {
     logger.error('Authorization header is missing.');
     res.status(401).json({ error: 'Invalid client' });

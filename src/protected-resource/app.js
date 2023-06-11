@@ -3,10 +3,16 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
-var cons = require('consolidate');
-var __ = require('underscore');
-__.string = require('underscore.string');
-
+const cons = require('consolidate');
+const { createLogger, format, transports } = require('winston');
+const logger = createLogger({
+  format: format.combine(
+    format.colorize(),
+    format.splat(),
+    format.simple()
+  ),
+  transports: [new transports.Console({ level: 'debug' })]
+});
 var app = express();
 
 app.set('appname', 'protected-resource');
@@ -22,8 +28,24 @@ app.use(express.static('views'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const resource = {
+  "name": "Protected Resource",
+  "description": "This data has been protected by OAuth 2.0"
+};
+
 app.get('/', (req, res) => {
   res.render('index');
+});
+
+app.get('/resource', (req, res) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    logger.error('Authorization header is missing.');
+    res.status(401).end();
+  }
+  logger.debug('Authorization header found.');
+  logger.debug('Incoming access_token: %s', authorization.substring('Bearer '.length));
+  res.status(200).json(resource);
 });
 
 const options = {
